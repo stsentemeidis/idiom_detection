@@ -7,7 +7,7 @@ Created on Sat Jun 15 13:01:12 2019
 
 import requests
 from bs4 import BeautifulSoup
-import os.path
+from utils import clear_file
 
 OUTPUT_FILE = "idioms.txt"
 
@@ -20,11 +20,9 @@ idioms = [strong_tag.get_text() for strong_tag in soup.select("td strong")]
 print("Number of idioms: {}".format(len(idioms)))
 
 # Clear contents if the file exists
-if os.path.exists(OUTPUT_FILE):
-    with open(OUTPUT_FILE, "w") as f:
-        f.write("")
+clear_file(OUTPUT_FILE)
 
-with open("idioms.txt", "a") as f:
+with open(OUTPUT_FILE, "a") as f:
     for idiom in idioms:    
         f.write(idiom + "\n")
 
