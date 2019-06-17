@@ -2,7 +2,7 @@ import os.path
 from datetime import datetime
 import re
 
-IDIOMS_FILE = "idioms.txt"
+IDIOMS_FILE = "./data/idioms.txt"
 
 def has_idiom(text, idiom):
     idiom_start = text.find(idiom)
