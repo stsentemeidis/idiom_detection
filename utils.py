@@ -1,6 +1,7 @@
 import os.path
 from datetime import datetime
 import re
+from nltk import pos_tag
 
 IDIOMS_FILE = "./data/idioms.txt"
 
@@ -62,7 +63,7 @@ def write_tagged_sentences(sents, output_file, idioms_file=IDIOMS_FILE):
         sent_text = " ".join(sent).lower()
         
         with open(idioms_file, "r") as f:
-            for line in f.readlines():
+            for line in f:
                 idiom = line.lower().strip()
                 if has_idiom(sent_text, idiom):
                     sent_text = sent_text.replace(idiom, tag_idiom(idiom))
@@ -78,9 +79,26 @@ def write_tagged_sentences(sents, output_file, idioms_file=IDIOMS_FILE):
 def num_found_idioms(file):
     with open(file, "r") as f:
         count = 0
-        for line in f.readlines():
+        for line in f:
             if "#BEGIN" in line:
                 count += 1
     
     return count
+
+
+def word_to_tags(word):
+    if "#" in word:
+        word, tag = word.split("#")
+    else:
+        tag = "OUT"
+
+    ps = pos_tag([word])[0][1]
+
+    return word, ps, tag
+
+
+
+
+
+    
     

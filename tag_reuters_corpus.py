@@ -2,7 +2,7 @@ from utils import write_tagged_sentences, clear_file, num_found_idioms
 from nltk.corpus import reuters
 
 
-OUTPUT_FILE = "./data/tagged_sentences_retuers.txt"
+OUTPUT_FILE = "./data/tagged_sentences_reuters.txt"
 
 sents = reuters.sents()
 
