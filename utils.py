@@ -5,26 +5,29 @@ from nltk import pos_tag
 
 IDIOMS_FILE = "./data/idioms.txt"
 
-def has_idiom(text, idiom):
+def text_has_idiom(text, idiom):
+    text = text.lower()
     idiom_start = text.find(idiom)
     
-    if idiom_start != -1:
+    if idiom_start == -1:
+        return False
+    else:
+
         try:
-            alpha_before = re.match("[a-zA-Z]", text[idiom_start-1])
+            alpha_before = idiom_start != 0 and re.match("[a-zA-Z]", text[idiom_start-1])
         except IndexError:
             alpha_before = False
         try:
             alpha_after = re.match("[a-zA-Z]", text[idiom_start + len(idiom)])
         except IndexError:
             alpha_after = False
-            
+        
         if alpha_before or alpha_after:
             return False
     
-    return True
+        return True
         
         
-
 def tag_idiom(idiom):
     idiom_as_list = idiom.split(" ")
     
@@ -42,7 +45,27 @@ def clear_file(output_file):
     if os.path.exists(output_file):
         with open(output_file, "w") as f:
             f.write("")
-            
+
+def retain_case(word, word_lower):
+    if "#" in word_lower:
+        tag = word_lower.split("#")[1]
+        word = word + "#" + tag
+    return word
+
+def replace_with_tag(text, idiom):
+    text_lower = text.lower()
+    
+    if text_has_idiom(text_lower, idiom):
+        text_lower = text_lower.replace(idiom, tag_idiom(idiom))
+
+        text_as_list = [retain_case(word, word_lower) \
+                        for word, word_lower in zip(text.split(),
+                                                    text_lower.split())
+                        ]
+    
+        text = " ".join(text_as_list)
+    
+    return text
 
 #KNOWN BUG(?): Information loss - everything is lowercased
 
@@ -60,13 +83,12 @@ def write_tagged_sentences(sents, output_file, idioms_file=IDIOMS_FILE):
             print("{}: Tagged {} of {} sentences..."
                   .format(datetime.now(),i, len(sents)))
         
-        sent_text = " ".join(sent).lower()
+        sent_text = " ".join(sent)
         
         with open(idioms_file, "r") as f:
             for line in f:
                 idiom = line.lower().strip()
-                if has_idiom(sent_text, idiom):
-                    sent_text = sent_text.replace(idiom, tag_idiom(idiom))
+                sent_text = replace_with_tag(sent_text, idiom)
                 
         with open(output_file, "a") as f:
             f.write(sent_text + "\n")
